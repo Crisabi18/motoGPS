@@ -7,6 +7,7 @@ let ultimaLng = 0;
 
 let watchId = null;
 
+let pantallaActual = "lista";
 
 // ======================
 // TALLERES
@@ -42,13 +43,14 @@ function findMe() {
     return;
   }
 
-navigator.geolocation.watchPosition(
-    mostrarTallerMasCercano,
-    mostrarError,
-    {
-        enableHighAccuracy:true,
-        maximumAge:0
-    }
+watchId = navigator.geolocation.watchPosition(
+  mostrarTallerMasCercano,
+  mostrarError,
+  {
+    enableHighAccuracy: false,
+    timeout: 5000,
+    maximumAge: 30000
+  }
 );
 }
 
@@ -126,6 +128,10 @@ function obtenerIndicacion(angulo){
 
 function mostrarTallerMasCercano(posicion) {
 
+  if (pantallaActual !== "lista") {
+  return;
+}
+
   ultimaLat = posicion.coords.latitude;
   ultimaLng = posicion.coords.longitude;
 
@@ -176,6 +182,8 @@ function mostrarTallerMasCercano(posicion) {
 
 function verTaller(index){
 
+  pantallaActual = "detalle";
+
   const taller = talleres[index];
 
   document.getElementById("resultado").innerHTML = `
@@ -221,13 +229,14 @@ function iniciarRadar(index){
   `;
 
   watchId = navigator.geolocation.watchPosition(
-    mostrarRadar,
-    mostrarError,
-    {
-      enableHighAccuracy:true,
-      maximumAge:0
-    }
-  );
+  mostrarRadar,
+  mostrarError,
+  {
+    enableHighAccuracy: false,
+    timeout: 5000,
+    maximumAge: 30000
+  }
+);
 }
 
 function mostrarRadar(posicion){
@@ -467,9 +476,7 @@ function findMe() {
 
 function volverLista() {
 
-  if (watchId) {
-    navigator.geolocation.clearWatch(watchId);
-  }
+  pantallaActual = "lista";
 
   navigator.geolocation.getCurrentPosition(
     mostrarTallerMasCercano,
