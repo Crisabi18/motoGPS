@@ -1,3 +1,5 @@
+let orientacionDispositivo = 0;
+
 // ======================
 // TALLERES
 // ======================
@@ -148,7 +150,10 @@ function mostrarTallerMasCercano(posicion) {
     tallerMasCercano.lng
   );
 
-  const indicacion = obtenerIndicacion(rumbo);
+  const rumboRelativo =
+  (rumbo - orientacionDispositivo + 360) % 360;
+
+  const indicacion = obtenerIndicacion(rumboRelativo);
 
   let distanciaTexto;
 
@@ -165,7 +170,7 @@ if (distanciaMinima < 1) {
 
   const radioRadar = 90;
 
-  const radianes = rumbo * Math.PI / 180;
+  const radianes = rumboRelativo * Math.PI / 180;
 
   const x = Math.sin(radianes) * radioRadar;
 
@@ -234,6 +239,10 @@ if (distanciaMinima < 1) {
         🧭 ${Math.round(rumbo)}°
       </p>
 
+      <p>
+        Orientación: ${Math.round(orientacionDispositivo)}°
+      </p>
+
     </div>
 
   `;
@@ -253,3 +262,74 @@ Mensaje: ${error.message}
   `);
 
 }
+
+// brujula
+function iniciarBrujula() {
+
+  if (
+    typeof DeviceOrientationEvent !== "undefined" &&
+    typeof DeviceOrientationEvent.requestPermission === "function"
+  ) {
+
+    // iPhone
+
+    DeviceOrientationEvent.requestPermission()
+      .then(permission => {
+
+        if (permission === "granted") {
+
+          window.addEventListener(
+            "deviceorientation",
+            actualizarBrujula,
+            true
+          );
+
+        }
+
+      });
+
+  } else {
+
+    // Android
+
+    window.addEventListener(
+      "deviceorientationabsolute",
+      actualizarBrujula,
+      true
+    );
+
+    window.addEventListener(
+      "deviceorientation",
+      actualizarBrujula,
+      true
+    );
+
+  }
+
+}
+
+function actualizarBrujula(event) {
+
+  if (event.alpha !== null) {
+
+    orientacionDispositivo = event.alpha;
+
+  }
+
+}
+
+function findMe() {
+
+  iniciarBrujula();
+
+  navigator.geolocation.watchPosition(
+    mostrarTallerMasCercano,
+    mostrarError,
+    {
+      enableHighAccuracy: true,
+      maximumAge: 0
+    }
+  );
+
+}
+
