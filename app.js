@@ -22,15 +22,14 @@ function findMe() {
     return;
   }
 
-  navigator.geolocation.getCurrentPosition(
+navigator.geolocation.watchPosition(
     mostrarTallerMasCercano,
     mostrarError,
     {
-      enableHighAccuracy: true,
-      timeout: 10000,
-      maximumAge: 0
+        enableHighAccuracy:true,
+        maximumAge:0
     }
-  );
+);
 }
 
 // ======================
@@ -151,8 +150,26 @@ function mostrarTallerMasCercano(posicion) {
 
   const indicacion = obtenerIndicacion(rumbo);
 
+  let distanciaTexto;
+
+if (distanciaMinima < 1) {
+    distanciaTexto =
+        Math.round(distanciaMinima * 1000) + " m";
+} else {
+    distanciaTexto =
+        distanciaMinima.toFixed(2) + " km";
+}
+
   const icono =
     indicacion.split(" ")[0];
+
+  const radioRadar = 90;
+
+  const radianes = rumbo * Math.PI / 180;
+
+  const x = Math.sin(radianes) * radioRadar;
+
+  const y = -Math.cos(radianes) * radioRadar;
 
   document.getElementById("resultado").innerHTML = `
   
@@ -182,15 +199,15 @@ function mostrarTallerMasCercano(posicion) {
           🏍️
         </div>
 
-        <div style="
-          position:absolute;
-          left:50%;
-          top:20px;
-          transform:translateX(-50%);
-          font-size:35px;
+       <div style="
+        position:absolute;
+        left:${125 + x}px;
+        top:${125 + y}px;
+        transform:translate(-50%, -50%);
+        font-size:35px;
         ">
-          🔧
-        </div>
+        🔧
+      </div>
 
       </div>
 
@@ -207,9 +224,7 @@ function mostrarTallerMasCercano(posicion) {
         🔧 ${tallerMasCercano.nombre}
       </p>
 
-      <p>
-        📏 ${distanciaMinima.toFixed(2)} km
-      </p>
+      <p>📏 ${distanciaTexto}</p>
 
       <p>
         📞 ${tallerMasCercano.telefono}
