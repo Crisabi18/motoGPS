@@ -1,5 +1,13 @@
 let orientacionDispositivo = 0;
 
+let tallerSeleccionado = null;
+
+let ultimaLat = 0;
+let ultimaLng = 0;
+
+let watchId = null;
+
+
 // ======================
 // TALLERES
 // ======================
@@ -9,7 +17,17 @@ const talleres = [
     nombre: "Taller Jorge",
     lat: 19.8766952,
     lng: -98.9616700,
-    telefono: "5512345678"
+    telefono: "5512345678",
+    direccion: "Haciendas de Tizayuca",
+    horario: "08:00 - 18:00"
+  },
+  {
+    nombre: "Taller Casa",
+    lat: 19.8782307,
+    lng: -98.9306489,
+    telefono: "7713824121",
+    direccion: "Casas Quma",
+    horario: "08:00 - 18:00"
   }
 ];
 
@@ -89,163 +107,277 @@ function calcularRumbo(lat1, lon1, lat2, lon2) {
 // INDICACIONES
 // ======================
 
-function obtenerIndicacion(angulo) {
+function obtenerIndicacion(angulo){
 
-  if (angulo >= 337.5 || angulo < 22.5)
+  if (angulo <= 45 || angulo >= 315)
     return "⬆ Sigue recto";
 
-  if (angulo < 67.5)
-    return "↗ Derecha leve";
+  if (angulo < 180)
+    return "➡ Gira derecha";
 
-  if (angulo < 112.5)
-    return "➡ Gira a la derecha";
+  if (angulo >= 180 && angulo <= 225)
+    return "↩ Retorno";
 
-  if (angulo < 157.5)
-    return "↘ Derecha fuerte";
-
-  if (angulo < 202.5)
-    return "↩ Da vuelta en U";
-
-  if (angulo < 247.5)
-    return "↙ Izquierda fuerte";
-
-  if (angulo < 292.5)
-    return "⬅ Gira a la izquierda";
-
-  return "↖ Izquierda leve";
+  return "⬅ Gira izquierda";
 }
-
 // ======================
 // RESULTADO
 // ======================
 
 function mostrarTallerMasCercano(posicion) {
 
-  const miLat = posicion.coords.latitude;
-  const miLng = posicion.coords.longitude;
+  ultimaLat = posicion.coords.latitude;
+  ultimaLng = posicion.coords.longitude;
 
-  let tallerMasCercano = null;
-  let distanciaMinima = Infinity;
+  let html = "";
 
-  talleres.forEach(taller => {
+  talleres.forEach((taller, index) => {
 
     const distancia = calcularDistancia(
-      miLat,
-      miLng,
+      ultimaLat,
+      ultimaLng,
       taller.lat,
       taller.lng
     );
 
-    if (distancia < distanciaMinima) {
-      distanciaMinima = distancia;
-      tallerMasCercano = taller;
+    let distanciaTexto;
+
+    if (distancia < 1) {
+      distanciaTexto =
+        Math.round(distancia * 1000) + " m";
+    } else {
+      distanciaTexto =
+        distancia.toFixed(2) + " km";
     }
 
+    html += `
+      <div style="
+        border:1px solid #ccc;
+        border-radius:10px;
+        margin:10px;
+        padding:10px;
+      ">
+      
+        <h3>${taller.nombre}</h3>
+
+        <p>📏 ${distanciaTexto}</p>
+
+        <button onclick="verTaller(${index})">
+          Ver más
+        </button>
+
+      </div>
+    `;
+
   });
+
+  document.getElementById("resultado").innerHTML = html;
+}
+
+function verTaller(index){
+
+  const taller = talleres[index];
+
+  document.getElementById("resultado").innerHTML = `
+  
+    <h2>${taller.nombre}</h2>
+
+    <p>📍 ${taller.direccion}</p>
+
+    <p>📞 ${taller.telefono}</p>
+
+    <p>⏰ ${taller.horario}</p>
+
+    <br>
+
+    <button onclick="iniciarRadar(${index})">
+      🧭 Navegar
+    </button>
+
+    <button onclick="auxilio(${index})">
+      🚚 Auxilio
+    </button>
+
+  `;
+}
+
+function iniciarRadar(index){
+
+  tallerSeleccionado = talleres[index];
+
+  document.getElementById("resultado").innerHTML = `
+    <div style="
+      text-align:center;
+      margin-top:40px;
+    ">
+
+      <h2>🛰️ Obteniendo ubicación...</h2>
+
+      <p>
+        Espera unos segundos
+      </p>
+
+    </div>
+  `;
+
+  watchId = navigator.geolocation.watchPosition(
+    mostrarRadar,
+    mostrarError,
+    {
+      enableHighAccuracy:true,
+      maximumAge:0
+    }
+  );
+}
+
+function mostrarRadar(posicion){
+
+  const miLat = posicion.coords.latitude;
+  const miLng = posicion.coords.longitude;
+
+  const distanciaMinima = calcularDistancia(
+    miLat,
+    miLng,
+    tallerSeleccionado.lat,
+    tallerSeleccionado.lng
+  );
 
   const rumbo = calcularRumbo(
     miLat,
     miLng,
-    tallerMasCercano.lat,
-    tallerMasCercano.lng
+    tallerSeleccionado.lat,
+    tallerSeleccionado.lng
   );
 
   const rumboRelativo =
-  (rumbo - orientacionDispositivo + 360) % 360;
+    (rumbo - orientacionDispositivo + 360) % 360;
 
-  const indicacion = obtenerIndicacion(rumboRelativo);
+    let indicacion = "⬆ Sigue recto";
+
+if (
+  rumboRelativo > 45 &&
+  rumboRelativo <= 135
+) {
+  indicacion = "➡ Gira a la derecha";
+}
+else if (
+  rumboRelativo > 135 &&
+  rumboRelativo <= 225
+) {
+  indicacion = "↩ Da vuelta";
+}
+else if (
+  rumboRelativo > 225 &&
+  rumboRelativo < 315
+) {
+  indicacion = "⬅ Gira a la izquierda";
+}
+
+if (distanciaMinima < 0.05) {
+  indicacion = "🏁 DESTINO CERCANO";
+}
+
+ 
 
   let distanciaTexto;
 
-if (distanciaMinima < 1) {
-    distanciaTexto =
-        Math.round(distanciaMinima * 1000) + " m";
-} else {
-    distanciaTexto =
-        distanciaMinima.toFixed(2) + " km";
-}
+  if(distanciaMinima < 1){
 
-  const icono =
-    indicacion.split(" ")[0];
+    distanciaTexto =
+      Math.round(distanciaMinima * 1000) + " m";
+
+  }else{
+
+    distanciaTexto =
+      distanciaMinima.toFixed(2) + " km";
+
+  }
 
   const radioRadar = 90;
 
-  const radianes = rumboRelativo * Math.PI / 180;
+  const radianes =
+    rumboRelativo * Math.PI / 180;
 
-  const x = Math.sin(radianes) * radioRadar;
+  const x =
+    Math.sin(radianes) * radioRadar;
 
-  const y = -Math.cos(radianes) * radioRadar;
+  const y =
+    -Math.cos(radianes) * radioRadar;
 
   document.getElementById("resultado").innerHTML = `
-  
-    <div style="
-      text-align:center;
-      margin-top:20px;
-      font-family:Arial;
-    ">
+
+    <div style="text-align:center">
 
       <div style="
         width:250px;
         height:250px;
-        border:3px solid #00ff66;
         border-radius:50%;
-        margin:auto;
-        position:relative;
+        border:3px solid #00ff66;
         background:#07160d;
+        position:relative;
+        margin:auto;
       ">
 
         <div style="
           position:absolute;
           left:50%;
           top:50%;
-          transform:translate(-50%,-50%);
+          transform:
+          translate(-50%,-50%);
           font-size:40px;
         ">
           🏍️
         </div>
 
-       <div style="
-        position:absolute;
-        left:${125 + x}px;
-        top:${125 + y}px;
-        transform:translate(-50%, -50%);
-        font-size:35px;
+        <div style="
+          position:absolute;
+          left:${125+x}px;
+          top:${125+y}px;
+          transform:
+          translate(-50%,-50%);
+          font-size:35px;
         ">
-        🔧
-      </div>
+          🔧
+        </div>
 
       </div>
 
-      <div style="
-        font-size:80px;
-        margin-top:20px;
-      ">
-        ${icono}
-      </div>
+    <h2 style="
+      color:#00ff66;
+      margin-top:15px;
+    ">
+      ${indicacion}
+    </h2>
 
-      <h2>${indicacion}</h2>
 
-      <p>
-        🔧 ${tallerMasCercano.nombre}
-      </p>
+      <h2>${tallerSeleccionado.nombre}</h2>
 
       <p>📏 ${distanciaTexto}</p>
 
-      <p>
-        📞 ${tallerMasCercano.telefono}
-      </p>
-
-      <p>
-        🧭 ${Math.round(rumbo)}°
-      </p>
-
-      <p>
-        Orientación: ${Math.round(orientacionDispositivo)}°
-      </p>
+      <button onclick="volverLista()">
+        ← Volver
+      </button>
 
     </div>
 
   `;
+}
+
+function auxilio(index){
+
+  const taller = talleres[index];
+
+  const mensaje =
+    encodeURIComponent(
+      "🏍️ AUXILIO\n" +
+      "Ubicación:\n" +
+      ultimaLat +
+      "," +
+      ultimaLng
+    );
+
+  location.href =
+    `sms:${taller.telefono}?body=${mensaje}`;
 }
 
 // ======================
@@ -329,6 +461,19 @@ function findMe() {
       enableHighAccuracy: true,
       maximumAge: 0
     }
+  );
+
+}
+
+function volverLista() {
+
+  if (watchId) {
+    navigator.geolocation.clearWatch(watchId);
+  }
+
+  navigator.geolocation.getCurrentPosition(
+    mostrarTallerMasCercano,
+    mostrarError
   );
 
 }
