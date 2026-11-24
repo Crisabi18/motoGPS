@@ -1,4 +1,7 @@
-// Base local de talleres
+// ======================
+// TALLERES
+// ======================
+
 const talleres = [
   {
     nombre: "Taller Jorge",
@@ -8,7 +11,12 @@ const talleres = [
   }
 ];
 
+// ======================
+// GPS
+// ======================
+
 function findMe() {
+
   if (!navigator.geolocation) {
     alert("Tu navegador no soporta GPS");
     return;
@@ -25,9 +33,13 @@ function findMe() {
   );
 }
 
-// Distancia entre dos coordenadas (Haversine)
+// ======================
+// DISTANCIA
+// ======================
+
 function calcularDistancia(lat1, lon1, lat2, lon2) {
-  const R = 6371; // km
+
+  const R = 6371;
 
   const dLat = (lat2 - lat1) * Math.PI / 180;
   const dLon = (lon2 - lon1) * Math.PI / 180;
@@ -38,17 +50,78 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
     Math.cos(lat2 * Math.PI / 180) *
     Math.sin(dLon / 2) * Math.sin(dLon / 2);
 
-  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  const c =
+    2 * Math.atan2(
+      Math.sqrt(a),
+      Math.sqrt(1 - a)
+    );
 
   return R * c;
 }
+
+// ======================
+// DIRECCION HACIA TALLER
+// ======================
+
+function calcularRumbo(lat1, lon1, lat2, lon2) {
+
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const y =
+    Math.sin(dLon) *
+    Math.cos(lat2 * Math.PI / 180);
+
+  const x =
+    Math.cos(lat1 * Math.PI / 180) *
+    Math.sin(lat2 * Math.PI / 180) -
+    Math.sin(lat1 * Math.PI / 180) *
+    Math.cos(lat2 * Math.PI / 180) *
+    Math.cos(dLon);
+
+  let rumbo =
+    Math.atan2(y, x) * 180 / Math.PI;
+
+  return (rumbo + 360) % 360;
+}
+
+// ======================
+// INDICACIONES
+// ======================
+
+function obtenerIndicacion(angulo) {
+
+  if (angulo >= 337.5 || angulo < 22.5)
+    return "⬆ Sigue recto";
+
+  if (angulo < 67.5)
+    return "↗ Derecha leve";
+
+  if (angulo < 112.5)
+    return "➡ Gira a la derecha";
+
+  if (angulo < 157.5)
+    return "↘ Derecha fuerte";
+
+  if (angulo < 202.5)
+    return "↩ Da vuelta en U";
+
+  if (angulo < 247.5)
+    return "↙ Izquierda fuerte";
+
+  if (angulo < 292.5)
+    return "⬅ Gira a la izquierda";
+
+  return "↖ Izquierda leve";
+}
+
+// ======================
+// RESULTADO
+// ======================
 
 function mostrarTallerMasCercano(posicion) {
 
   const miLat = posicion.coords.latitude;
   const miLng = posicion.coords.longitude;
-
-  console.log(posicion.coords);
 
   let tallerMasCercano = null;
   let distanciaMinima = Infinity;
@@ -66,29 +139,102 @@ function mostrarTallerMasCercano(posicion) {
       distanciaMinima = distancia;
       tallerMasCercano = taller;
     }
+
   });
 
+  const rumbo = calcularRumbo(
+    miLat,
+    miLng,
+    tallerMasCercano.lat,
+    tallerMasCercano.lng
+  );
+
+  const indicacion = obtenerIndicacion(rumbo);
+
+  const icono =
+    indicacion.split(" ")[0];
+
   document.getElementById("resultado").innerHTML = `
-    <h3>🔧 Taller más cercano</h3>
+  
+    <div style="
+      text-align:center;
+      margin-top:20px;
+      font-family:Arial;
+    ">
 
-    <p><strong>${tallerMasCercano.nombre}</strong></p>
+      <div style="
+        width:250px;
+        height:250px;
+        border:3px solid #00ff66;
+        border-radius:50%;
+        margin:auto;
+        position:relative;
+        background:#07160d;
+      ">
 
-    <p>📏 ${distanciaMinima.toFixed(2)} km</p>
+        <div style="
+          position:absolute;
+          left:50%;
+          top:50%;
+          transform:translate(-50%,-50%);
+          font-size:40px;
+        ">
+          🏍️
+        </div>
 
-    <p>📞 ${tallerMasCercano.telefono}</p>
+        <div style="
+          position:absolute;
+          left:50%;
+          top:20px;
+          transform:translateX(-50%);
+          font-size:35px;
+        ">
+          🔧
+        </div>
 
-    <hr>
+      </div>
 
-    <p>📍 Tu ubicación:</p>
+      <div style="
+        font-size:80px;
+        margin-top:20px;
+      ">
+        ${icono}
+      </div>
 
-    <p>${miLat.toFixed(6)}, ${miLng.toFixed(6)}</p>
+      <h2>${indicacion}</h2>
+
+      <p>
+        🔧 ${tallerMasCercano.nombre}
+      </p>
+
+      <p>
+        📏 ${distanciaMinima.toFixed(2)} km
+      </p>
+
+      <p>
+        📞 ${tallerMasCercano.telefono}
+      </p>
+
+      <p>
+        🧭 ${Math.round(rumbo)}°
+      </p>
+
+    </div>
+
   `;
 }
 
+// ======================
+// ERROR GPS
+// ======================
+
 function mostrarError(error) {
-  console.log(error);
+
+  console.error(error);
+
   alert(`
 Código: ${error.code}
 Mensaje: ${error.message}
   `);
+
 }
