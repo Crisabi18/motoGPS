@@ -1,4 +1,3 @@
-
 // ======================
 // TALLERES
 // ======================
@@ -38,8 +37,9 @@ function buscarTalleres() {
     mostrarTalleres,
     mostrarError,
     {
-      enableHighAccuracy: false,
-      timeout: 5000
+      enableHighAccuracy: true,
+      timeout: 15000,
+      maximumAge: 0
     }
   );
 
@@ -108,8 +108,7 @@ function mostrarTalleres(posicion) {
   });
 
   lista.sort(
-    (a, b) =>
-      a.distancia - b.distancia
+    (a, b) => a.distancia - b.distancia
   );
 
   let html = "";
@@ -125,7 +124,6 @@ function mostrarTalleres(posicion) {
         " km";
 
     html += `
-
       <div style="
         border:1px solid #ccc;
         border-radius:10px;
@@ -137,55 +135,48 @@ function mostrarTalleres(posicion) {
 
         <p>📏 ${distanciaTexto}</p>
 
-        <button
-          onclick="verTaller(${taller.id})"
-        >
+        <button onclick="verTaller('${taller.nombre}')">
           Ver más
         </button>
 
       </div>
-
     `;
   });
 
-  document.getElementById("resultado").innerHTML =
-    html;
+  document.getElementById(
+    "resultado"
+  ).innerHTML = html;
+
 }
 
 // ======================
 // VER TALLER
 // ======================
 
-function verTaller(id) {
+function verTaller(nombre){
 
   const taller =
     talleres.find(
-      t => t.id === id
+      t => t.nombre === nombre
     );
 
   document.getElementById("resultado").innerHTML = `
 
     <h2>${taller.nombre}</h2>
 
-    <p>
-      📍 ${taller.direccion}
-    </p>
+    <p>📍 ${taller.direccion}</p>
 
-    <p>
-      📞 ${taller.telefono}
-    </p>
+    <p>📞 ${taller.telefono}</p>
 
-    <p>
-      ⏰ ${taller.horario}
-    </p>
+    <p>⏰ ${taller.horario}</p>
 
     <br>
 
-    <button onclick="navegar(${id})">
+    <button onclick="navegar('${taller.nombre}')">
       🧭 Navegar
     </button>
 
-    <button onclick="auxilio(${id})">
+    <button onclick="auxilio('${taller.nombre}')">
       🚚 Auxilio
     </button>
 
@@ -194,71 +185,150 @@ function verTaller(id) {
     </button>
 
   `;
+
 }
 
 // ======================
 // NAVEGAR
 // ======================
 
-function navegar(id) {
+async function navegar(nombre){
 
   const taller =
     talleres.find(
-      t => t.id === id
+      t => t.nombre === nombre
     );
 
-  if (navigator.onLine) {
+  document.getElementById("resultado").innerHTML = `
+    <h2>🧭 Calculando ruta...</h2>
+  `;
+
+  try {
+
+    const url =
+      `https://router.project-osrm.org/route/v1/driving/` +
+      `${ultimaLng},${ultimaLat};` +
+      `${taller.lng},${taller.lat}` +
+      `?overview=full&geometries=geojson`;
+
+    const respuesta =
+      await fetch(url);
+
+    const datos =
+      await respuesta.json();
+
+    localStorage.setItem(
+      "rutaGuardada",
+      JSON.stringify(datos)
+    );
+
+    const distanciaRuta =
+      datos.routes[0].distance;
+
+    const tiempoRuta =
+      datos.routes[0].duration;
+
+    const metros =
+      Math.round(distanciaRuta);
+
+    const minutos =
+      Math.round(tiempoRuta / 60);
+
+    const coords =
+      datos.routes[0]
+      .geometry.coordinates;
 
     document.getElementById("resultado").innerHTML = `
 
-      <h2>🟢 Modo Ruta</h2>
+      <h2>🧭 Navegando</h2>
 
       <h3>${taller.nombre}</h3>
 
-      <p>
-        Aquí irá la ruta real.
-      </p>
+      <p>📏 ${metros} m</p>
 
-      <button onclick="verTaller(${id})">
+      <p>⏱️ ${minutos} min</p>
+
+      <div
+        id="mapa"
+        style="
+          height:500px;
+          border-radius:10px;
+          margin-top:15px;
+        ">
+      </div>
+
+      <br>
+
+      <button onclick="verTaller('${taller.nombre}')">
         ← Volver
       </button>
 
     `;
 
-  } else {
+    const mapa = L.map("mapa");
 
-    document.getElementById("resultado").innerHTML = `
+    L.tileLayer(
+      "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+      {
+        attribution: "© OpenStreetMap"
+      }
+    ).addTo(mapa);
 
-      <h2>🔴 Modo Emergencia</h2>
+    L.marker([
+      ultimaLat,
+      ultimaLng
+    ])
+      .addTo(mapa)
+      .bindPopup("🏍️ Tú");
 
-      <h3>${taller.nombre}</h3>
+    L.marker([
+      taller.lat,
+      taller.lng
+    ])
+      .addTo(mapa)
+      .bindPopup("🔧 Taller");
 
-      <p>
-        Sin internet.
-      </p>
+    const ruta = coords.map(
+      punto => [
+        punto[1],
+        punto[0]
+      ]
+    );
 
-      <p>
-        Utiliza el modo rescate.
-      </p>
+    const linea = L.polyline(
+      ruta,
+      {
+        color: "red",
+        weight: 5
+      }
+    ).addTo(mapa);
 
-      <button onclick="verTaller(${id})">
-        ← Volver
-      </button>
-
-    `;
+    mapa.fitBounds(
+      linea.getBounds()
+    );
 
   }
+  catch(error){
+
+    console.error(error);
+
+    alert(
+      "No se pudo obtener la ruta"
+    );
+
+  }
+
 }
 
 // ======================
 // AUXILIO
 // ======================
 
-function auxilio(id) {
+function auxilio(nombre){
 
   const taller =
     talleres.find(
-      t => t.id === id
+      t => t.nombre === nombre
     );
 
   const mensaje =
@@ -279,10 +349,14 @@ function auxilio(id) {
 // ERROR GPS
 // ======================
 
-function mostrarError(error) {
+function mostrarError(error){
+
+  console.error(error);
 
   alert(
-    "No se pudo obtener la ubicación.\n\n" +
+    "Código: " +
+    error.code +
+    "\n\n" +
     error.message
   );
 

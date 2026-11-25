@@ -3,16 +3,32 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+
     <title>Document</title>
+
+    <style>
+        #mapa{
+          height:400px;
+          width:100%;
+        }
+    </style>
 </head>
 <body>
+
+<button onclick="alternarMapa()">
+🗺️ Cambiar Vista
+</button>
 
 <button onclick="buscarTalleres()">
   Buscar talleres
 </button>
 
 <div id="resultado"></div>
+
+<div id="mapa"></div>
     
 <script src="app.js"></script>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 </body>
 </html>
