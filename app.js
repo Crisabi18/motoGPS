@@ -262,6 +262,8 @@ function mostrarRadar(posicion){
 
   const rumboRelativo = rumbo;
 
+    console.log("Rumbo:", rumbo);
+
  let direccion = "⬆ Norte";
 
 if (rumbo >= 22.5 && rumbo < 67.5)
@@ -364,6 +366,47 @@ distanciaAnterior = distanciaMinima;
           🔧
         </div>
 
+        <div style="
+ position:absolute;
+ top:5px;
+ left:50%;
+ transform:translateX(-50%);
+ color:red;
+ font-weight:bold;
+">
+ N
+</div>
+
+<div style="
+ position:absolute;
+ bottom:5px;
+ left:50%;
+ transform:translateX(-50%);
+ color:white;
+">
+ S
+</div>
+
+<div style="
+ position:absolute;
+ left:5px;
+ top:50%;
+ transform:translateY(-50%);
+ color:white;
+">
+ O
+</div>
+
+<div style="
+ position:absolute;
+ right:5px;
+ top:50%;
+ transform:translateY(-50%);
+ color:white;
+">
+ E
+</div>
+
       </div>
 
 
@@ -385,12 +428,7 @@ distanciaAnterior = distanciaMinima;
 </p>
 
       <p>📏 ${distanciaTexto}</p>
-
-      <p>📍 ${tallerSeleccionado.direccion}</p>
-
-      <p>⏰ ${tallerSeleccionado.horario}</p>
-
-      <p> ${orientacionDispositivo.toFixed(1)}°</p>
+      <p>🧭 ${rumbo.toFixed(0)}°</p>
 
       <button onclick="volverLista()">
         ← Volver
