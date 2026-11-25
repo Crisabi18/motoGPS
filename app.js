@@ -1,3 +1,5 @@
+let distanciaAnterior = null;
+
 let orientacionDispositivo = 0;
 
 let tallerSeleccionado = null;
@@ -258,34 +260,46 @@ function mostrarRadar(posicion){
     tallerSeleccionado.lng
   );
 
-  const rumboRelativo =
-    (rumbo - orientacionDispositivo + 90 + 360) % 360;
+  const rumboRelativo = rumbo;
 
-    let indicacion = "⬆ Sigue recto";
+ let direccion = "⬆ Norte";
 
-if (
-  rumboRelativo > 45 &&
-  rumboRelativo <= 135
-) {
-  indicacion = "➡ Gira a la derecha";
-}
-else if (
-  rumboRelativo > 135 &&
-  rumboRelativo <= 225
-) {
-  indicacion = "↩ Da vuelta";
-}
-else if (
-  rumboRelativo > 225 &&
-  rumboRelativo < 315
-) {
-  indicacion = "⬅ Gira a la izquierda";
+if (rumbo >= 22.5 && rumbo < 67.5)
+  direccion = "↗ Noreste";
+
+else if (rumbo < 112.5)
+  direccion = "➡ Este";
+
+else if (rumbo < 157.5)
+  direccion = "↘ Sureste";
+
+else if (rumbo < 202.5)
+  direccion = "⬇ Sur";
+
+else if (rumbo < 247.5)
+  direccion = "↙ Suroeste";
+
+else if (rumbo < 292.5)
+  direccion = "⬅ Oeste";
+
+else if (rumbo < 337.5)
+  direccion = "↖ Noroeste";
+
+
+let estado = "📍 Calculando";
+
+if (distanciaAnterior !== null) {
+
+  if (distanciaMinima < distanciaAnterior) {
+    estado = "✅ Te estás acercando";
+  }
+  else {
+    estado = "❌ Te estás alejando";
+  }
+
 }
 
-if (distanciaMinima < 0.05) {
-  indicacion = "🏁 DESTINO CERCANO";
-}
-
+distanciaAnterior = distanciaMinima;
  
 
   let distanciaTexto;
@@ -352,15 +366,23 @@ if (distanciaMinima < 0.05) {
 
       </div>
 
-    <h2 style="
-      color:#00ff66;
-      margin-top:15px;
-    ">
-      ${indicacion}
-    </h2>
 
 
       <h2>${tallerSeleccionado.nombre}</h2>
+
+<p style="
+  color:#00ff66;
+  font-size:22px;
+  font-weight:bold;
+">
+  ${direccion}
+</p>
+
+<p style="
+  font-size:18px;
+">
+  ${estado}
+</p>
 
       <p>📏 ${distanciaTexto}</p>
 
