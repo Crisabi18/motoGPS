@@ -259,7 +259,7 @@ function mostrarRadar(posicion){
   );
 
   const rumboRelativo =
-    (rumbo - orientacionDispositivo + 180 + 360) % 360;
+    (rumbo - orientacionDispositivo + 90 + 360) % 360;
 
     let indicacion = "⬆ Sigue recto";
 
@@ -325,6 +325,7 @@ if (distanciaMinima < 0.05) {
         background:#07160d;
         position:relative;
         margin:auto;
+        margin-top:20px;
       ">
 
         <div style="
@@ -362,6 +363,12 @@ if (distanciaMinima < 0.05) {
       <h2>${tallerSeleccionado.nombre}</h2>
 
       <p>📏 ${distanciaTexto}</p>
+
+      <p>📍 ${tallerSeleccionado.direccion}</p>
+
+      <p>⏰ ${tallerSeleccionado.horario}</p>
+
+      <p> ${orientacionDispositivo.toFixed(1)}°</p>
 
       <button onclick="volverLista()">
         ← Volver
