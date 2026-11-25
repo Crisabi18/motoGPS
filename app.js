@@ -1,15 +1,3 @@
-let distanciaAnterior = null;
-
-let orientacionDispositivo = 0;
-
-let tallerSeleccionado = null;
-
-let ultimaLat = 0;
-let ultimaLng = 0;
-
-let watchId = null;
-
-let pantallaActual = "lista";
 
 // ======================
 // TALLERES
@@ -34,26 +22,27 @@ const talleres = [
   }
 ];
 
+let ultimaLat = 0;
+let ultimaLng = 0;
+
 // ======================
-// GPS
+// BUSCAR TALLERES
 // ======================
 
-function findMe() {
+function buscarTalleres() {
 
-  if (!navigator.geolocation) {
-    alert("Tu navegador no soporta GPS");
-    return;
-  }
+  document.getElementById("resultado").innerHTML =
+    "<p>📍 Obteniendo ubicación...</p>";
 
-watchId = navigator.geolocation.watchPosition(
-  mostrarTallerMasCercano,
-  mostrarError,
-  {
-    enableHighAccuracy: false,
-    timeout: 5000,
-    maximumAge: 30000
-  }
-);
+  navigator.geolocation.getCurrentPosition(
+    mostrarTalleres,
+    mostrarError,
+    {
+      enableHighAccuracy: false,
+      timeout: 5000
+    }
+  );
+
 }
 
 // ======================
@@ -64,14 +53,21 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
 
   const R = 6371;
 
-  const dLat = (lat2 - lat1) * Math.PI / 180;
-  const dLon = (lon2 - lon1) * Math.PI / 180;
+  const dLat =
+    (lat2 - lat1) * Math.PI / 180;
+
+  const dLon =
+    (lon2 - lon1) * Math.PI / 180;
 
   const a =
-    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+    Math.sin(dLat / 2) *
+    Math.sin(dLat / 2) +
+
     Math.cos(lat1 * Math.PI / 180) *
     Math.cos(lat2 * Math.PI / 180) *
-    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+
+    Math.sin(dLon / 2) *
+    Math.sin(dLon / 2);
 
   const c =
     2 * Math.atan2(
@@ -83,369 +79,192 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
 }
 
 // ======================
-// DIRECCION HACIA TALLER
+// MOSTRAR TALLERES
 // ======================
 
-function calcularRumbo(lat1, lon1, lat2, lon2) {
+function mostrarTalleres(posicion) {
 
-  const dLon = (lon2 - lon1) * Math.PI / 180;
+  ultimaLat =
+    posicion.coords.latitude;
 
-  const y =
-    Math.sin(dLon) *
-    Math.cos(lat2 * Math.PI / 180);
+  ultimaLng =
+    posicion.coords.longitude;
 
-  const x =
-    Math.cos(lat1 * Math.PI / 180) *
-    Math.sin(lat2 * Math.PI / 180) -
-    Math.sin(lat1 * Math.PI / 180) *
-    Math.cos(lat2 * Math.PI / 180) *
-    Math.cos(dLon);
+  const lista = talleres.map(taller => {
 
-  let rumbo =
-    Math.atan2(y, x) * 180 / Math.PI;
+    const distancia =
+      calcularDistancia(
+        ultimaLat,
+        ultimaLng,
+        taller.lat,
+        taller.lng
+      );
 
-  return (rumbo + 360) % 360;
-}
+    return {
+      ...taller,
+      distancia
+    };
 
-// ======================
-// INDICACIONES
-// ======================
+  });
 
-// function obtenerIndicacion(angulo){
-
-//   if (angulo <= 45 || angulo >= 315)
-//     return "⬆ Sigue recto";
-
-//   if (angulo < 180)
-//     return "➡ Gira derecha";
-
-//   if (angulo >= 180 && angulo <= 225)
-//     return "↩ Retorno";
-
-//   return "⬅ Gira izquierda";
-// }
-// ======================
-// RESULTADO
-// ======================
-
-function mostrarTallerMasCercano(posicion) {
-
-  if (pantallaActual !== "lista") {
-  return;
-}
-
-  ultimaLat = posicion.coords.latitude;
-  ultimaLng = posicion.coords.longitude;
+  lista.sort(
+    (a, b) =>
+      a.distancia - b.distancia
+  );
 
   let html = "";
 
-  talleres.forEach((taller, index) => {
+  lista.forEach(taller => {
 
-    const distancia = calcularDistancia(
-      ultimaLat,
-      ultimaLng,
-      taller.lat,
-      taller.lng
-    );
-
-    let distanciaTexto;
-
-    if (distancia < 1) {
-      distanciaTexto =
-        Math.round(distancia * 1000) + " m";
-    } else {
-      distanciaTexto =
-        distancia.toFixed(2) + " km";
-    }
+    const distanciaTexto =
+      taller.distancia < 1
+      ? Math.round(
+          taller.distancia * 1000
+        ) + " m"
+      : taller.distancia.toFixed(2) +
+        " km";
 
     html += `
+
       <div style="
         border:1px solid #ccc;
         border-radius:10px;
-        margin:10px;
-        padding:10px;
+        padding:12px;
+        margin:10px 0;
       ">
-      
+
         <h3>${taller.nombre}</h3>
 
         <p>📏 ${distanciaTexto}</p>
 
-        <button onclick="verTaller(${index})">
+        <button
+          onclick="verTaller(${taller.id})"
+        >
           Ver más
         </button>
 
       </div>
-    `;
 
+    `;
   });
 
-  document.getElementById("resultado").innerHTML = html;
+  document.getElementById("resultado").innerHTML =
+    html;
 }
 
-function verTaller(index){
+// ======================
+// VER TALLER
+// ======================
 
-  pantallaActual = "detalle";
+function verTaller(id) {
 
-  const taller = talleres[index];
+  const taller =
+    talleres.find(
+      t => t.id === id
+    );
 
   document.getElementById("resultado").innerHTML = `
-  
+
     <h2>${taller.nombre}</h2>
 
-    <p>📍 ${taller.direccion}</p>
+    <p>
+      📍 ${taller.direccion}
+    </p>
 
-    <p>📞 ${taller.telefono}</p>
+    <p>
+      📞 ${taller.telefono}
+    </p>
 
-    <p>⏰ ${taller.horario}</p>
+    <p>
+      ⏰ ${taller.horario}
+    </p>
 
     <br>
 
-    <button onclick="iniciarRadar(${index})">
+    <button onclick="navegar(${id})">
       🧭 Navegar
     </button>
 
-    <button onclick="auxilio(${index})">
+    <button onclick="auxilio(${id})">
       🚚 Auxilio
+    </button>
+
+    <button onclick="buscarTalleres()">
+      ← Volver
     </button>
 
   `;
 }
 
-function iniciarRadar(index){
+// ======================
+// NAVEGAR
+// ======================
 
-  tallerSeleccionado = talleres[index];
+function navegar(id) {
 
-  document.getElementById("resultado").innerHTML = `
-    <div style="
-      text-align:center;
-      margin-top:40px;
-    ">
+  const taller =
+    talleres.find(
+      t => t.id === id
+    );
 
-      <h2>🛰️ Obteniendo ubicación...</h2>
+  if (navigator.onLine) {
+
+    document.getElementById("resultado").innerHTML = `
+
+      <h2>🟢 Modo Ruta</h2>
+
+      <h3>${taller.nombre}</h3>
 
       <p>
-        Espera unos segundos
+        Aquí irá la ruta real.
       </p>
 
-    </div>
-  `;
-
-  watchId = navigator.geolocation.watchPosition(
-  mostrarRadar,
-  mostrarError,
-  {
-    enableHighAccuracy: false,
-    timeout: 5000,
-    maximumAge: 30000
-  }
-);
-}
-
-function mostrarRadar(posicion){
-
-  const miLat = posicion.coords.latitude;
-  const miLng = posicion.coords.longitude;
-
-  const distanciaMinima = calcularDistancia(
-    miLat,
-    miLng,
-    tallerSeleccionado.lat,
-    tallerSeleccionado.lng
-  );
-
-  const rumbo = calcularRumbo(
-    miLat,
-    miLng,
-    tallerSeleccionado.lat,
-    tallerSeleccionado.lng
-  );
-
-  const rumboRelativo = rumbo;
-
-    console.log("Rumbo:", rumbo);
-
- let direccion = "⬆ Norte";
-
-if (rumbo >= 22.5 && rumbo < 67.5)
-  direccion = "↗ Noreste";
-
-else if (rumbo < 112.5)
-  direccion = "➡ Este";
-
-else if (rumbo < 157.5)
-  direccion = "↘ Sureste";
-
-else if (rumbo < 202.5)
-  direccion = "⬇ Sur";
-
-else if (rumbo < 247.5)
-  direccion = "↙ Suroeste";
-
-else if (rumbo < 292.5)
-  direccion = "⬅ Oeste";
-
-else if (rumbo < 337.5)
-  direccion = "↖ Noroeste";
-
-
-let estado = "📍 Calculando";
-
-if (distanciaAnterior !== null) {
-
-  if (distanciaMinima < distanciaAnterior) {
-    estado = "✅ Te estás acercando";
-  }
-  else {
-    estado = "❌ Te estás alejando";
-  }
-
-}
-
-distanciaAnterior = distanciaMinima;
- 
-
-  let distanciaTexto;
-
-  if(distanciaMinima < 1){
-
-    distanciaTexto =
-      Math.round(distanciaMinima * 1000) + " m";
-
-  }else{
-
-    distanciaTexto =
-      distanciaMinima.toFixed(2) + " km";
-
-  }
-
-  const radioRadar = 90;
-
-  const radianes =
-    rumboRelativo * Math.PI / 180;
-
-  const x =
-    Math.sin(radianes) * radioRadar;
-
-  const y =
-    -Math.cos(radianes) * radioRadar;
-
-  document.getElementById("resultado").innerHTML = `
-
-    <div style="text-align:center">
-
-      <div style="
-        width:250px;
-        height:250px;
-        border-radius:50%;
-        border:3px solid #00ff66;
-        background:#07160d;
-        position:relative;
-        margin:auto;
-        margin-top:20px;
-      ">
-
-        <div style="
-          position:absolute;
-          left:50%;
-          top:50%;
-          transform:
-          translate(-50%,-50%);
-          font-size:40px;
-        ">
-          🏍️
-        </div>
-
-        <div style="
-          position:absolute;
-          left:${125+x}px;
-          top:${125+y}px;
-          transform:
-          translate(-50%,-50%);
-          font-size:35px;
-        ">
-          🔧
-        </div>
-
-        <div style="
- position:absolute;
- top:5px;
- left:50%;
- transform:translateX(-50%);
- color:red;
- font-weight:bold;
-">
- N
-</div>
-
-<div style="
- position:absolute;
- bottom:5px;
- left:50%;
- transform:translateX(-50%);
- color:white;
-">
- S
-</div>
-
-<div style="
- position:absolute;
- left:5px;
- top:50%;
- transform:translateY(-50%);
- color:white;
-">
- O
-</div>
-
-<div style="
- position:absolute;
- right:5px;
- top:50%;
- transform:translateY(-50%);
- color:white;
-">
- E
-</div>
-
-      </div>
-
-
-
-      <h2>${tallerSeleccionado.nombre}</h2>
-
-<p style="
-  color:#00ff66;
-  font-size:22px;
-  font-weight:bold;
-">
-  ${direccion}
-</p>
-
-<p style="
-  font-size:18px;
-">
-  ${estado}
-</p>
-
-      <p>📏 ${distanciaTexto}</p>
-      <p>🧭 ${rumbo.toFixed(0)}°</p>
-
-      <button onclick="volverLista()">
+      <button onclick="verTaller(${id})">
         ← Volver
       </button>
 
-    </div>
+    `;
 
-  `;
+  } else {
+
+    document.getElementById("resultado").innerHTML = `
+
+      <h2>🔴 Modo Emergencia</h2>
+
+      <h3>${taller.nombre}</h3>
+
+      <p>
+        Sin internet.
+      </p>
+
+      <p>
+        Utiliza el modo rescate.
+      </p>
+
+      <button onclick="verTaller(${id})">
+        ← Volver
+      </button>
+
+    `;
+
+  }
 }
 
-function auxilio(index){
+// ======================
+// AUXILIO
+// ======================
 
-  const taller = talleres[index];
+function auxilio(id) {
+
+  const taller =
+    talleres.find(
+      t => t.id === id
+    );
 
   const mensaje =
     encodeURIComponent(
-      "🏍️ AUXILIO\n" +
+      "🏍️ AUXILIO\n\n" +
+      "Necesito asistencia.\n\n" +
       "Ubicación:\n" +
       ultimaLat +
       "," +
@@ -462,93 +281,9 @@ function auxilio(index){
 
 function mostrarError(error) {
 
-  console.error(error);
-
-  alert(`
-Código: ${error.code}
-Mensaje: ${error.message}
-  `);
-
-}
-
-// brujula
-function iniciarBrujula() {
-
-  if (
-    typeof DeviceOrientationEvent !== "undefined" &&
-    typeof DeviceOrientationEvent.requestPermission === "function"
-  ) {
-
-    // iPhone
-
-    DeviceOrientationEvent.requestPermission()
-      .then(permission => {
-
-        if (permission === "granted") {
-
-          window.addEventListener(
-            "deviceorientation",
-            actualizarBrujula,
-            true
-          );
-
-        }
-
-      });
-
-  } else {
-
-    // Android
-
-    window.addEventListener(
-      "deviceorientationabsolute",
-      actualizarBrujula,
-      true
-    );
-
-    window.addEventListener(
-      "deviceorientation",
-      actualizarBrujula,
-      true
-    );
-
-  }
-
-}
-
-function actualizarBrujula(event) {
-
-  if (event.alpha !== null) {
-
-    orientacionDispositivo = event.alpha;
-
-  }
-
-}
-
-function findMe() {
-
-  iniciarBrujula();
-
-  navigator.geolocation.watchPosition(
-    mostrarTallerMasCercano,
-    mostrarError,
-    {
-      enableHighAccuracy: true,
-      maximumAge: 0
-    }
+  alert(
+    "No se pudo obtener la ubicación.\n\n" +
+    error.message
   );
 
 }
-
-function volverLista() {
-
-  pantallaActual = "lista";
-
-  navigator.geolocation.getCurrentPosition(
-    mostrarTallerMasCercano,
-    mostrarError
-  );
-
-}
-
