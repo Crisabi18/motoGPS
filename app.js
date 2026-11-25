@@ -259,7 +259,7 @@ function mostrarRadar(posicion){
   );
 
   const rumboRelativo =
-    (rumbo - orientacionDispositivo + 360) % 360;
+    (rumbo - orientacionDispositivo + 180 + 360) % 360;
 
     let indicacion = "⬆ Sigue recto";
 
