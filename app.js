@@ -111,19 +111,19 @@ function calcularRumbo(lat1, lon1, lat2, lon2) {
 // INDICACIONES
 // ======================
 
-function obtenerIndicacion(angulo){
+// function obtenerIndicacion(angulo){
 
-  if (angulo <= 45 || angulo >= 315)
-    return "⬆ Sigue recto";
+//   if (angulo <= 45 || angulo >= 315)
+//     return "⬆ Sigue recto";
 
-  if (angulo < 180)
-    return "➡ Gira derecha";
+//   if (angulo < 180)
+//     return "➡ Gira derecha";
 
-  if (angulo >= 180 && angulo <= 225)
-    return "↩ Retorno";
+//   if (angulo >= 180 && angulo <= 225)
+//     return "↩ Retorno";
 
-  return "⬅ Gira izquierda";
-}
+//   return "⬅ Gira izquierda";
+// }
 // ======================
 // RESULTADO
 // ======================
