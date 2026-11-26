@@ -16,19 +16,27 @@
 }
 
 body{
-    min-height:100vh;
-    display:flex;
-    justify-content:center;
-    align-items:center;
-    background:
-    linear-gradient(
-        135deg,
-        #0f172a,
-        #1e293b,
-        #0f172a
-    );
-    overflow:hidden;
-}
+
+  width:100%;
+  max-width:100%;
+  min-height:100dvh;
+
+  margin:0;
+  padding:0;
+
+  background:
+  linear-gradient(
+    135deg,
+    #0f172a,
+    #1e293b,
+    #0f172a
+  );
+
+    color:white;
+
+    overflow-x:hidden;
+
+ } 
 
 /* círculos decorativos */
 
@@ -59,7 +67,10 @@ body::after{
 }
 
 .container{
-    width:min(1100px,95%);
+    width:100%;
+    max-width:1100px;
+    margin:auto;
+    padding:15px;
     z-index:10;
 }
 
