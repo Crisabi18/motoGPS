@@ -15,95 +15,7 @@ content="width=device-width, initial-scale=1.0">
 
 <style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
-}
 
-html,
-body{
-
-    width:100%;
-    min-height:100dvh;
-
-    overflow-x:hidden;
-
-}
-
-body{
-
-    background:
-    linear-gradient(
-        135deg,
-        #0f172a,
-        #1e293b,
-        #0f172a
-    );
-
-    color:white;
-
-    padding:20px;
-
-}
-
-body::before{
-
-    content:"";
-
-    position:fixed;
-
-    width:350px;
-    height:350px;
-
-    background:#2563eb;
-
-    border-radius:50%;
-
-    top:-100px;
-    left:-100px;
-
-    filter:blur(120px);
-
-    opacity:.4;
-
-    z-index:-1;
-
-}
-
-body::after{
-
-    content:"";
-
-    position:fixed;
-
-    width:350px;
-    height:350px;
-
-    background:#22c55e;
-
-    border-radius:50%;
-
-    bottom:-100px;
-    right:-100px;
-
-    filter:blur(120px);
-
-    opacity:.4;
-
-    z-index:-1;
-
-}
-
-.container{
-
-    width:100%;
-    max-width:1000px;
-
-    margin:auto;
-
-}
 
 .header{
 
@@ -273,6 +185,12 @@ pre{
 
 <div class="container">
 
+    <div class="back">
+        <button style=" display:flex; width:40px; height:40px; align-items:center; justify-content:center;" onclick="window.location.href='taller.html'">
+            <img src="img/back.png" alt="Volver" style="width:20px; height:20px;">
+        </button>
+    </div>
+
 <div class="header">
 
 <h1>🔧 Registro de Taller</h1>
@@ -304,21 +222,6 @@ Completa tu información para aparecer en MotoGPS
 <div>
 <label>Teléfono</label>
 <input id="telefono">
-</div>
-
-<div>
-<label>WhatsApp</label>
-<input id="whatsapp">
-</div>
-
-<div>
-<label>Correo</label>
-<input id="correo">
-</div>
-
-<div>
-<label>Dirección</label>
-<input id="direccion">
 </div>
 
 </div>
@@ -392,29 +295,6 @@ onclick="obtenerUbicacion()"
 
 </div>
 
-<!-- SERVICIOS -->
-
-<div class="card">
-
-<h2>Servicios</h2>
-
-<div class="checks">
-
-<label><input type="checkbox" id="mecanica">Mecánica General</label>
-
-<label><input type="checkbox" id="electrico">Eléctrico</label>
-
-<label><input type="checkbox" id="inyeccion">Inyección</label>
-
-<label><input type="checkbox" id="suspension">Suspensión</label>
-
-<label><input type="checkbox" id="llantas">Llantas</label>
-
-<label><input type="checkbox" id="diagnostico">Diagnóstico</label>
-
-</div>
-
-</div>
 
 <!-- AUXILIO -->
 
@@ -449,6 +329,8 @@ Auxilio carretero
 
 <select id="cobertura">
 
+<option value="">Seleccione una opción</option>
+<option>Sin Cobertura</option>
 <option>5 km</option>
 <option>10 km</option>
 <option>20 km</option>
@@ -473,164 +355,7 @@ onclick="guardarTaller()"
 
 <script>
 
-function obtenerUbicacion(){
 
-navigator.geolocation.getCurrentPosition(
-posicion=>{
-
-document.getElementById(
-"lat"
-).value=
-posicion.coords.latitude;
-
-document.getElementById(
-"lng"
-).value=
-posicion.coords.longitude;
-
-});
-
-}
-
-function guardarTaller(){
-
-const dias = [];
-
-document
-.querySelectorAll(
-'.checks input[type="checkbox"]'
-)
-.forEach(check=>{
-
-if(
-check.checked &&
-check.value
-){
-dias.push(
-check.value
-);
-}
-
-});
-
-const taller = {
-
-nombre:
-document.getElementById(
-"nombre"
-).value,
-
-propietario:
-document.getElementById(
-"propietario"
-).value,
-
-telefono:
-document.getElementById(
-"telefono"
-).value,
-
-whatsapp:
-document.getElementById(
-"whatsapp"
-).value,
-
-correo:
-document.getElementById(
-"correo"
-).value,
-
-direccion:
-document.getElementById(
-"direccion"
-).value,
-
-lat:
-document.getElementById(
-"lat"
-).value,
-
-lng:
-document.getElementById(
-"lng"
-).value,
-
-dias,
-
-apertura:
-document.getElementById(
-"apertura"
-).value,
-
-cierre:
-document.getElementById(
-"cierre"
-).value,
-
-mecanica:
-document.getElementById(
-"mecanica"
-).checked,
-
-electrico:
-document.getElementById(
-"electrico"
-).checked,
-
-inyeccion:
-document.getElementById(
-"inyeccion"
-).checked,
-
-suspension:
-document.getElementById(
-"suspension"
-).checked,
-
-llantas:
-document.getElementById(
-"llantas"
-).checked,
-
-diagnostico:
-document.getElementById(
-"diagnostico"
-).checked,
-
-domicilio:
-document.getElementById(
-"domicilio"
-).checked,
-
-remolque:
-document.getElementById(
-"remolque"
-).checked,
-
-auxilio:
-document.getElementById(
-"auxilio"
-).checked,
-
-cobertura:
-document.getElementById(
-"cobertura"
-).value
-
-};
-
-document.getElementById(
-"json"
-).textContent =
-JSON.stringify(
-taller,
-null,
-2
-);
-
-console.log(taller);
-
-}
 
 </script>
 <script src="app.js"></script>

@@ -13,109 +13,19 @@ content="width=device-width, initial-scale=1.0">
 
 <title>MotoGPS Talleres</title>
 
-<style>
 
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Segoe UI',sans-serif;
-}
-
-html,
-body{
-
-    width:100%;
-    min-height:100dvh;
-
-    overflow-x:hidden;
-
-}
-
-body{
-
-    background:
-    linear-gradient(
-        135deg,
-        #0f172a,
-        #1e293b,
-        #0f172a
-    );
-
-    color:white;
-
-    padding:20px;
-
-}
-
-/* Luces */
-
-body::before{
-
-    content:"";
-
-    position:fixed;
-
-    width:350px;
-    height:350px;
-
-    border-radius:50%;
-
-    background:#2563eb;
-
-    top:-100px;
-    left:-100px;
-
-    filter:blur(120px);
-
-    opacity:.4;
-
-    z-index:-1;
-
-}
-
-body::after{
-
-    content:"";
-
-    position:fixed;
-
-    width:350px;
-    height:350px;
-
-    border-radius:50%;
-
-    background:#22c55e;
-
-    bottom:-100px;
-    right:-100px;
-
-    filter:blur(120px);
-
-    opacity:.4;
-
-    z-index:-1;
-
-}
-
-.container{
-
-    width:100%;
-    max-width:1100px;
-
-    margin:auto;
-
-}
-
-
-
-</style>
 
 </head>
 
 <body>
 
 <div class="container">
+
+    <div class="back">
+        <button style=" display:flex; width:40px; height:40px; align-items:center; justify-content:center;" onclick="window.location.href='index.html'">
+            <img src="img/back.png" alt="Volver" style="width:20px; height:20px;">
+        </button>
+    </div>
 
     <div class="hero">
 
@@ -236,9 +146,7 @@ body::after{
 
     </div>
 
-     <button style="margin-top:20px;" onclick="window.location.href='index.html'">
-        🏠 Volver al inicio
-    </button>
+
 
 </div>
 

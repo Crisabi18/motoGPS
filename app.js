@@ -1,18 +1,7 @@
 let rutaActual = null;
 let tallerActual = null;
 
-console.log("mecanica", document.getElementById("mecanica"));
-console.log("electrico", document.getElementById("electrico"));
-console.log("inyeccion", document.getElementById("inyeccion"));
-console.log("suspension", document.getElementById("suspension"));
-console.log("llantas", document.getElementById("llantas"));
-console.log("diagnostico", document.getElementById("diagnostico"));
-console.log("domicilio", document.getElementById("domicilio"));
-console.log("remolque", document.getElementById("remolque"));
-console.log("auxilio", document.getElementById("auxilio"));
-
-
-const talleres = [
+const talleresIniciales = [
   {
     nombre: "Taller Jorge",
     lat: 19.8766952,
@@ -31,6 +20,34 @@ const talleres = [
   }
 ];
 
+
+if(
+  !localStorage.getItem(
+    "talleres"
+  )
+){
+
+  localStorage.setItem(
+    "talleres",
+    JSON.stringify(
+      talleresIniciales
+    )
+  );
+
+}
+
+function obtenerTalleres(){
+
+  return JSON.parse(
+    localStorage.getItem(
+      "talleres"
+    )
+  ) || [];
+
+}
+
+const talleres =
+obtenerTalleres();
 let ultimaLat = 0;
 let ultimaLng = 0;
 
@@ -101,6 +118,9 @@ function mostrarTalleres(posicion) {
   ultimaLng =
     posicion.coords.longitude;
 
+  const talleres =
+  obtenerTalleres();
+
   const lista = talleres.map(taller => {
 
     const distancia =
@@ -166,6 +186,143 @@ function mostrarTalleres(posicion) {
   document.getElementById(
     "resultado"
   ).innerHTML = html;
+
+}
+
+
+// guuardar taller
+
+function obtenerUbicacion(){
+
+navigator.geolocation.getCurrentPosition(
+posicion=>{
+
+document.getElementById(
+"lat"
+).value=
+posicion.coords.latitude;
+
+document.getElementById(
+"lng"
+).value=
+posicion.coords.longitude;
+
+});
+
+}
+
+function guardarTaller(){
+
+const dias = [];
+
+document
+.querySelectorAll(
+'.checks input[type="checkbox"]'
+)
+.forEach(check=>{
+
+if(
+check.checked &&
+check.value
+){
+dias.push(
+check.value
+);
+}
+
+});
+
+const tallerNuevo = {
+
+nombre:
+document.getElementById(
+"nombre"
+).value,
+
+propietario:
+document.getElementById(
+"propietario"
+).value,
+
+telefono:
+document.getElementById(
+"telefono"
+).value,
+
+lat:
+document.getElementById(
+"lat"
+).value,
+
+lng:
+document.getElementById(
+"lng"
+).value,
+
+dias,
+
+apertura:
+document.getElementById(
+"apertura"
+).value,
+
+cierre:
+document.getElementById(
+"cierre"
+).value,
+
+domicilio:
+document.getElementById(
+"domicilio"
+).checked,
+
+remolque:
+document.getElementById(
+"remolque"
+).checked,
+
+auxilio:
+document.getElementById(
+"auxilio"
+).checked,
+
+cobertura:
+document.getElementById(
+"cobertura"
+).value
+
+};
+
+document.getElementById(
+"json"
+).textContent =
+JSON.stringify(
+tallerNuevo,
+null,
+2
+);
+
+console.log(tallerNuevo);
+
+
+
+talleres.push(
+  tallerNuevo
+);
+
+localStorage.setItem(
+  "talleres",
+  JSON.stringify(
+    talleres
+  )
+);
+
+alert(
+  "✅ Taller registrado"
+);
+
+window.location.href =
+  "usuario.html";
 
 }
 
