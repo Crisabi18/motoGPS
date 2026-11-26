@@ -1,6 +1,17 @@
 let rutaActual = null;
 let tallerActual = null;
 
+console.log("mecanica", document.getElementById("mecanica"));
+console.log("electrico", document.getElementById("electrico"));
+console.log("inyeccion", document.getElementById("inyeccion"));
+console.log("suspension", document.getElementById("suspension"));
+console.log("llantas", document.getElementById("llantas"));
+console.log("diagnostico", document.getElementById("diagnostico"));
+console.log("domicilio", document.getElementById("domicilio"));
+console.log("remolque", document.getElementById("remolque"));
+console.log("auxilio", document.getElementById("auxilio"));
+
+
 const talleres = [
   {
     nombre: "Taller Jorge",

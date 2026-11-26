@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="style.css"/>
+
+<title>Registro de Taller</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+html,
+body{
+
+    width:100%;
+    min-height:100dvh;
+
+    overflow-x:hidden;
+
+}
+
+body{
+
+    background:
+    linear-gradient(
+        135deg,
+        #0f172a,
+        #1e293b,
+        #0f172a
+    );
+
+    color:white;
+
+    padding:20px;
+
+}
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    width:350px;
+    height:350px;
+
+    background:#2563eb;
+
+    border-radius:50%;
+
+    top:-100px;
+    left:-100px;
+
+    filter:blur(120px);
+
+    opacity:.4;
+
+    z-index:-1;
+
+}
+
+body::after{
+
+    content:"";
+
+    position:fixed;
+
+    width:350px;
+    height:350px;
+
+    background:#22c55e;
+
+    border-radius:50%;
+
+    bottom:-100px;
+    right:-100px;
+
+    filter:blur(120px);
+
+    opacity:.4;
+
+    z-index:-1;
+
+}
+
+.container{
+
+    width:100%;
+    max-width:1000px;
+
+    margin:auto;
+
+}
+
+.header{
+
+    text-align:center;
+
+    margin-bottom:30px;
+
+}
+
+.header h1{
+
+    font-size:2.5rem;
+
+    margin-bottom:10px;
+
+}
+
+.header p{
+
+    color:#cbd5e1;
+
+}
+
+.card{
+
+    background:
+    rgba(255,255,255,.08);
+
+    backdrop-filter:
+    blur(20px);
+
+    border:
+    1px solid rgba(255,255,255,.15);
+
+    border-radius:25px;
+
+    padding:25px;
+
+    margin-bottom:20px;
+
+}
+
+h2{
+
+    margin-bottom:20px;
+
+}
+
+.grid{
+
+    display:grid;
+
+    grid-template-columns:
+    repeat(auto-fit,minmax(250px,1fr));
+
+    gap:15px;
+
+}
+
+label{
+
+    display:block;
+
+    margin-bottom:8px;
+
+    font-size:.95rem;
+
+}
+
+input,
+select{
+
+    width:100%;
+
+    padding:14px;
+
+    border:none;
+
+    outline:none;
+
+    color:white;
+
+    border-radius:12px;
+
+    background:
+    rgba(15,23,42,.3);
+
+    border:
+    1px solid rgba(255,255,255,.10);
+
+}
+
+input::placeholder{
+
+    color:#cbd5e1;
+
+}
+
+.checks{
+
+    display:grid;
+
+    gap:10px;
+}
+
+.checks label{
+
+    display:flex;
+
+    gap:10px;
+
+    align-items:center;
+}
+
+input[type="checkbox"]{
+
+    width:auto;
+}
+
+.boton{
+
+    width:100%;
+
+    padding:16px;
+
+    border:none;
+
+    cursor:pointer;
+
+    color:white;
+
+    font-size:1rem;
+
+    border-radius:15px;
+
+    margin-top:15px;
+
+    background:
+    linear-gradient(
+        135deg,
+        #2563eb,
+        #1d4ed8
+    );
+
+}
+
+pre{
+
+    margin-top:15px;
+
+    padding:15px;
+
+    border-radius:15px;
+
+    background:
+    rgba(0,0,0,.25);
+
+    overflow:auto;
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+<div class="header">
+
+<h1>🔧 Registro de Taller</h1>
+
+<p>
+Completa tu información para aparecer en MotoGPS
+</p>
+
+</div>
+
+<!-- DATOS -->
+
+<div class="card">
+
+<h2>Información General</h2>
+
+<div class="grid">
+
+<div>
+<label>Nombre del Taller</label>
+<input id="nombre">
+</div>
+
+<div>
+<label>Propietario</label>
+<input id="propietario">
+</div>
+
+<div>
+<label>Teléfono</label>
+<input id="telefono">
+</div>
+
+<div>
+<label>WhatsApp</label>
+<input id="whatsapp">
+</div>
+
+<div>
+<label>Correo</label>
+<input id="correo">
+</div>
+
+<div>
+<label>Dirección</label>
+<input id="direccion">
+</div>
+
+</div>
+
+</div>
+
+<!-- UBICACION -->
+
+<div class="card">
+
+<h2>Ubicación</h2>
+
+<div class="grid">
+
+<div>
+<label>Latitud</label>
+<input id="lat">
+</div>
+
+<div>
+<label>Longitud</label>
+<input id="lng">
+</div>
+
+</div>
+
+<button
+class="boton"
+onclick="obtenerUbicacion()"
+>
+
+📍 Obtener ubicación actual
+
+</button>
+
+</div>
+
+<!-- HORARIOS -->
+
+<div class="card">
+
+<h2>Días de trabajo</h2>
+
+<div class="checks">
+
+<label><input type="checkbox" value="Lunes">Lunes</label>
+<label><input type="checkbox" value="Martes">Martes</label>
+<label><input type="checkbox" value="Miércoles">Miércoles</label>
+<label><input type="checkbox" value="Jueves">Jueves</label>
+<label><input type="checkbox" value="Viernes">Viernes</label>
+<label><input type="checkbox" value="Sábado">Sábado</label>
+<label><input type="checkbox" value="Domingo">Domingo</label>
+
+</div>
+
+<br>
+
+<div class="grid">
+
+<div>
+<label>Apertura</label>
+<input type="time" id="apertura">
+</div>
+
+<div>
+<label>Cierre</label>
+<input type="time" id="cierre">
+</div>
+
+</div>
+
+</div>
+
+<!-- SERVICIOS -->
+
+<div class="card">
+
+<h2>Servicios</h2>
+
+<div class="checks">
+
+<label><input type="checkbox" id="mecanica">Mecánica General</label>
+
+<label><input type="checkbox" id="electrico">Eléctrico</label>
+
+<label><input type="checkbox" id="inyeccion">Inyección</label>
+
+<label><input type="checkbox" id="suspension">Suspensión</label>
+
+<label><input type="checkbox" id="llantas">Llantas</label>
+
+<label><input type="checkbox" id="diagnostico">Diagnóstico</label>
+
+</div>
+
+</div>
+
+<!-- AUXILIO -->
+
+<div class="card">
+
+<h2>Servicios Especiales</h2>
+
+<div class="checks">
+
+<label><input type="checkbox" id="domicilio">
+Servicio a domicilio
+</label>
+
+<label><input type="checkbox" id="remolque">
+Remolque
+</label>
+
+<label><input type="checkbox" id="auxilio">
+Auxilio carretero
+</label>
+
+
+</div>
+
+</div>
+
+<!-- COBERTURA -->
+
+<div class="card">
+
+<h2>Cobertura</h2>
+
+<select id="cobertura">
+
+<option>5 km</option>
+<option>10 km</option>
+<option>20 km</option>
+<option>50 km</option>
+
+</select>
+
+</div>
+
+<button
+class="boton"
+onclick="guardarTaller()"
+>
+
+✅ Registrar Taller
+
+</button>
+
+<pre id="json"></pre>
+
+</div>
+
+<script>
+
+function obtenerUbicacion(){
+
+navigator.geolocation.getCurrentPosition(
+posicion=>{
+
+document.getElementById(
+"lat"
+).value=
+posicion.coords.latitude;
+
+document.getElementById(
+"lng"
+).value=
+posicion.coords.longitude;
+
+});
+
+}
+
+function guardarTaller(){
+
+const dias = [];
+
+document
+.querySelectorAll(
+'.checks input[type="checkbox"]'
+)
+.forEach(check=>{
+
+if(
+check.checked &&
+check.value
+){
+dias.push(
+check.value
+);
+}
+
+});
+
+const taller = {
+
+nombre:
+document.getElementById(
+"nombre"
+).value,
+
+propietario:
+document.getElementById(
+"propietario"
+).value,
+
+telefono:
+document.getElementById(
+"telefono"
+).value,
+
+whatsapp:
+document.getElementById(
+"whatsapp"
+).value,
+
+correo:
+document.getElementById(
+"correo"
+).value,
+
+direccion:
+document.getElementById(
+"direccion"
+).value,
+
+lat:
+document.getElementById(
+"lat"
+).value,
+
+lng:
+document.getElementById(
+"lng"
+).value,
+
+dias,
+
+apertura:
+document.getElementById(
+"apertura"
+).value,
+
+cierre:
+document.getElementById(
+"cierre"
+).value,
+
+mecanica:
+document.getElementById(
+"mecanica"
+).checked,
+
+electrico:
+document.getElementById(
+"electrico"
+).checked,
+
+inyeccion:
+document.getElementById(
+"inyeccion"
+).checked,
+
+suspension:
+document.getElementById(
+"suspension"
+).checked,
+
+llantas:
+document.getElementById(
+"llantas"
+).checked,
+
+diagnostico:
+document.getElementById(
+"diagnostico"
+).checked,
+
+domicilio:
+document.getElementById(
+"domicilio"
+).checked,
+
+remolque:
+document.getElementById(
+"remolque"
+).checked,
+
+auxilio:
+document.getElementById(
+"auxilio"
+).checked,
+
+cobertura:
+document.getElementById(
+"cobertura"
+).value
+
+};
+
+document.getElementById(
+"json"
+).textContent =
+JSON.stringify(
+taller,
+null,
+2
+);
+
+console.log(taller);
+
+}
+
+</script>
+<script src="app.js"></script>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+</body>
+</html>
