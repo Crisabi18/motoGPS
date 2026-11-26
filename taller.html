@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta
+name="viewport"
+content="width=device-width, initial-scale=1.0">
+
+<link rel="stylesheet" href="style.css"/>
+
+<title>MotoGPS Talleres</title>
+
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+html,
+body{
+
+    width:100%;
+    min-height:100dvh;
+
+    overflow-x:hidden;
+
+}
+
+body{
+
+    background:
+    linear-gradient(
+        135deg,
+        #0f172a,
+        #1e293b,
+        #0f172a
+    );
+
+    color:white;
+
+    padding:20px;
+
+}
+
+/* Luces */
+
+body::before{
+
+    content:"";
+
+    position:fixed;
+
+    width:350px;
+    height:350px;
+
+    border-radius:50%;
+
+    background:#2563eb;
+
+    top:-100px;
+    left:-100px;
+
+    filter:blur(120px);
+
+    opacity:.4;
+
+    z-index:-1;
+
+}
+
+body::after{
+
+    content:"";
+
+    position:fixed;
+
+    width:350px;
+    height:350px;
+
+    border-radius:50%;
+
+    background:#22c55e;
+
+    bottom:-100px;
+    right:-100px;
+
+    filter:blur(120px);
+
+    opacity:.4;
+
+    z-index:-1;
+
+}
+
+.container{
+
+    width:100%;
+    max-width:1100px;
+
+    margin:auto;
+
+}
+
+
+
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+
+    <div class="hero">
+
+        <h1>
+            🔧 MotoGPS Talleres
+        </h1>
+
+        <p>
+            Conecta tu taller con motociclistas
+            que necesitan ayuda cerca de ti.
+        </p>
+
+    </div>
+
+    <div class="glass">
+
+        <h2>
+            ¿Por qué registrar mi taller?
+        </h2>
+
+        <div class="lista">
+
+            <div>✅ Aparece en búsquedas cercanas</div>
+
+            <div>✅ Recibe solicitudes de auxilio</div>
+
+            <div>✅ Muestra horarios y servicios</div>
+
+            <div>✅ Promociona productos y refacciones</div>
+
+            <div>✅ Incrementa tu presencia local</div>
+
+        </div>
+
+    </div>
+
+    <div class="grid">
+
+        <div class="beneficio">
+
+            <div class="icono">
+                📍
+            </div>
+
+            <h3>
+                Más Visibilidad
+            </h3>
+
+            <p>
+                Los motociclistas cercanos
+                podrán encontrar tu taller.
+            </p>
+
+        </div>
+
+        <div class="beneficio">
+
+            <div class="icono">
+                🚚
+            </div>
+
+            <h3>
+                Solicitudes
+            </h3>
+
+            <p>
+                Atiende rescates y
+                servicios de emergencia.
+            </p>
+
+        </div>
+
+        <div class="beneficio">
+
+            <div class="icono">
+                📦
+            </div>
+
+            <h3>
+                Productos
+            </h3>
+
+            <p>
+                Muestra artículos y
+                refacciones disponibles.
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="glass">
+
+        <h2 style="text-align:center;">
+            ¿Listo para comenzar?
+        </h2>
+
+        <p
+        style="
+        color:#cbd5e1;
+        margin-top:10px;
+        ">
+
+        Completa tu registro y
+        comienza a aparecer
+        en MotoGPS.
+
+        </p>
+
+        <button
+            class="botonPrincipal"
+            onclick="location.href='registro-taller.html'"
+        >
+
+            Registrar mi taller
+
+        </button>
+
+    </div>
+
+     <button style="margin-top:20px;" onclick="window.location.href='index.html'">
+        🏠 Volver al inicio
+    </button>
+
+</div>
+
+</body>
+</html>
