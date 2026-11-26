@@ -147,6 +147,12 @@ function mostrarTalleres(posicion) {
 
       </div>
 
+      <button
+        onclick="window.location.href='index.html'"
+      >
+        ← Volver a talleres
+      </button>
+
     `;
 
   });
