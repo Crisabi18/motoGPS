@@ -1,6 +1,5 @@
-// ======================
-// TALLERES
-// ======================
+let rutaActual = null;
+let tallerActual = null;
 
 const talleres = [
   {
@@ -76,6 +75,7 @@ function calcularDistancia(lat1, lon1, lat2, lon2) {
     );
 
   return R * c;
+
 }
 
 // ======================
@@ -108,7 +108,7 @@ function mostrarTalleres(posicion) {
   });
 
   lista.sort(
-    (a, b) => a.distancia - b.distancia
+    (a,b) => a.distancia - b.distancia
   );
 
   let html = "";
@@ -124,23 +124,31 @@ function mostrarTalleres(posicion) {
         " km";
 
     html += `
-      <div style="
-        border:1px solid #ccc;
-        border-radius:10px;
-        padding:12px;
-        margin:10px 0;
-      ">
 
-        <h3>${taller.nombre}</h3>
+      <div class="cardTaller">
+
+        <h3>🔧 ${taller.nombre}</h3>
 
         <p>📏 ${distanciaTexto}</p>
 
-        <button onclick="verTaller('${taller.nombre}')">
+        <button
+          onclick="toggleInfo('${taller.nombre}')"
+        >
           Ver más
         </button>
 
+        <div
+          id="detalle-${taller.nombre}"
+          style="
+            display:none;
+            margin-top:15px;
+          ">
+        </div>
+
       </div>
+
     `;
+
   });
 
   document.getElementById(
@@ -150,41 +158,76 @@ function mostrarTalleres(posicion) {
 }
 
 // ======================
-// VER TALLER
+// DETALLE
 // ======================
 
-function verTaller(nombre){
+function toggleInfo(nombre){
+
+  const detalle =
+    document.getElementById(
+      `detalle-${nombre}`
+    );
 
   const taller =
     talleres.find(
       t => t.nombre === nombre
     );
 
-  document.getElementById("resultado").innerHTML = `
+  if(
+    detalle.style.display ===
+    "block"
+  ){
 
-    <h2>${taller.nombre}</h2>
+    detalle.style.display =
+      "none";
 
-    <p>📍 ${taller.direccion}</p>
+    detalle.innerHTML = "";
 
-    <p>📞 ${taller.telefono}</p>
+    return;
 
-    <p>⏰ ${taller.horario}</p>
+  }
 
-    <br>
+  detalle.innerHTML = `
 
-    <button onclick="navegar('${taller.nombre}')">
-      🧭 Navegar
-    </button>
+    <p>
+      📍 ${taller.direccion}
+    </p>
 
-    <button onclick="auxilio('${taller.nombre}')">
-      🚚 Auxilio
-    </button>
+    <p>
+      📞 ${taller.telefono}
+    </p>
 
-    <button onclick="buscarTalleres()">
-      ← Volver
-    </button>
+    <p>
+      ⏰ ${taller.horario}
+    </p>
+
+    <div
+      style="
+        display:flex;
+        flex-wrap:wrap;
+        gap:10px;
+        margin-top:10px;
+      "
+    >
+
+      <button
+        onclick="navegar('${taller.nombre}')"
+      >
+        🧭 Navegar
+      </button>
+
+      <button
+        onclick="auxilio('${taller.nombre}')"
+      >
+        🚚 Auxilio
+      </button>
+
+    </div>
 
   `;
+
+  detalle.style.display =
+    "block";
 
 }
 
@@ -199,7 +242,9 @@ async function navegar(nombre){
       t => t.nombre === nombre
     );
 
-  document.getElementById("resultado").innerHTML = `
+  document.getElementById(
+    "resultado"
+  ).innerHTML = `
     <h2>🧭 Calculando ruta...</h2>
   `;
 
@@ -217,11 +262,6 @@ async function navegar(nombre){
     const datos =
       await respuesta.json();
 
-    localStorage.setItem(
-      "rutaGuardada",
-      JSON.stringify(datos)
-    );
-
     const distanciaRuta =
       datos.routes[0].distance;
 
@@ -232,15 +272,19 @@ async function navegar(nombre){
       Math.round(distanciaRuta);
 
     const minutos =
-      Math.round(tiempoRuta / 60);
+      Math.round(
+        tiempoRuta / 60
+      );
 
     const coords =
       datos.routes[0]
       .geometry.coordinates;
 
-    document.getElementById("resultado").innerHTML = `
+    document.getElementById(
+      "resultado"
+    ).innerHTML = `
 
-      <h2>🧭 Navegando</h2>
+      <h2>🧭 Navegación</h2>
 
       <h3>${taller.nombre}</h3>
 
@@ -252,25 +296,29 @@ async function navegar(nombre){
         id="mapa"
         style="
           height:500px;
-          border-radius:10px;
+          border-radius:15px;
           margin-top:15px;
         ">
       </div>
 
       <br>
 
-      <button onclick="verTaller('${taller.nombre}')">
-        ← Volver
+      <button
+        onclick="buscarTalleres()"
+      >
+        ← Volver a talleres
       </button>
 
     `;
 
-    const mapa = L.map("mapa");
+    const mapa =
+      L.map("mapa");
 
     L.tileLayer(
       "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
       {
-        attribution: "© OpenStreetMap"
+        attribution:
+          "© OpenStreetMap"
       }
     ).addTo(mapa);
 
@@ -286,7 +334,9 @@ async function navegar(nombre){
       taller.lng
     ])
       .addTo(mapa)
-      .bindPopup("🔧 Taller");
+      .bindPopup(
+        `🔧 ${taller.nombre}`
+      );
 
     const ruta = coords.map(
       punto => [
@@ -295,13 +345,14 @@ async function navegar(nombre){
       ]
     );
 
-    const linea = L.polyline(
-      ruta,
-      {
-        color: "red",
-        weight: 5
-      }
-    ).addTo(mapa);
+    const linea =
+      L.polyline(
+        ruta,
+        {
+          color: "red",
+          weight: 5
+        }
+      ).addTo(mapa);
 
     mapa.fitBounds(
       linea.getBounds()
@@ -313,7 +364,7 @@ async function navegar(nombre){
     console.error(error);
 
     alert(
-      "No se pudo obtener la ruta"
+      "No se pudo obtener la ruta."
     );
 
   }
@@ -343,6 +394,7 @@ function auxilio(nombre){
 
   location.href =
     `sms:${taller.telefono}?body=${mensaje}`;
+
 }
 
 // ======================

@@ -1,34 +1,264 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Document</title>
+<title>MotoGPS</title>
 
-    <style>
-        #mapa{
-          height:400px;
-          width:100%;
-        }
-    </style>
+<style>
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Segoe UI',sans-serif;
+}
+
+body{
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:
+    linear-gradient(
+        135deg,
+        #0f172a,
+        #1e293b,
+        #0f172a
+    );
+    overflow:hidden;
+}
+
+/* círculos decorativos */
+
+body::before{
+    content:"";
+    position:absolute;
+    width:350px;
+    height:350px;
+    border-radius:50%;
+    background:#3b82f6;
+    top:-100px;
+    left:-100px;
+    filter:blur(120px);
+    opacity:.4;
+}
+
+body::after{
+    content:"";
+    position:absolute;
+    width:350px;
+    height:350px;
+    border-radius:50%;
+    background:#22c55e;
+    bottom:-100px;
+    right:-100px;
+    filter:blur(120px);
+    opacity:.4;
+}
+
+.container{
+    width:min(1100px,95%);
+    z-index:10;
+}
+
+.logo{
+    text-align:center;
+    margin-bottom:40px;
+}
+
+.logo h1{
+    color:white;
+    font-size:3rem;
+}
+
+.logo p{
+    color:#cbd5e1;
+    margin-top:10px;
+}
+
+.cards{
+    display:grid;
+    grid-template-columns:
+    repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+}
+
+.card{
+    min-height:280px;
+
+    background:
+    rgba(255,255,255,.08);
+
+    border:
+    1px solid rgba(255,255,255,.15);
+
+    backdrop-filter:
+    blur(20px);
+
+    -webkit-backdrop-filter:
+    blur(20px);
+
+    border-radius:25px;
+
+    cursor:pointer;
+
+    transition:.35s;
+
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+
+    color:white;
+}
+
+.card:hover{
+
+    transform:translateY(-10px);
+
+    background:
+    rgba(255,255,255,.12);
+
+    box-shadow:
+    0 25px 45px
+    rgba(0,0,0,.25);
+}
+
+.card:active{
+
+    scale:.98;
+
+    background:
+    rgba(255,255,255,.18);
+}
+
+.icono{
+    font-size:5rem;
+    margin-bottom:20px;
+}
+
+.card h2{
+    margin-bottom:12px;
+}
+
+.card p{
+    width:80%;
+    color:#dbeafe;
+    line-height:1.5;
+}
+
+.admin{
+    margin-top:35px;
+    text-align:center;
+}
+
+.admin button{
+
+    padding:12px 24px;
+
+    border:none;
+
+    border-radius:50px;
+
+    cursor:pointer;
+
+    color:white;
+
+    background:
+    rgba(255,255,255,.12);
+
+    backdrop-filter:blur(20px);
+
+    border:1px solid
+    rgba(255,255,255,.15);
+
+    transition:.3s;
+}
+
+.admin button:hover{
+
+    background:
+    rgba(255,255,255,.20);
+
+}
+
+</style>
+
 </head>
+
 <body>
 
-<button onclick="alternarMapa()">
-🗺️ Cambiar Vista
-</button>
+<div class="container">
 
-<button onclick="buscarTalleres()">
-  Buscar talleres
-</button>
+    <div class="logo">
 
-<div id="resultado"></div>
+        <h1>🏍️ MotoGPS</h1>
 
-<div id="mapa"></div>
-    
-<script src="app.js"></script>
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+        <p>
+            Plataforma de asistencia para motociclistas
+        </p>
+
+    </div>
+
+    <div class="cards">
+
+        <div
+            class="card"
+            onclick="location.href='usuario.html'"
+        >
+
+            <div class="icono">
+                👤
+            </div>
+
+            <h2>Soy Usuario</h2>
+
+            <p>
+                Busca talleres cercanos,
+                solicita auxilio,
+                encuentra refacciones y
+                recibe asistencia en carretera.
+            </p>
+
+        </div>
+
+        <div
+            class="card"
+            onclick="location.href='taller.html'"
+        >
+
+            <div class="icono">
+                🔧
+            </div>
+
+            <h2>Soy Taller</h2>
+
+            <p>
+                Registra tu taller,
+                muestra tus servicios,
+                administra tu información
+                y llega a más motociclistas.
+            </p>
+
+        </div>
+
+    </div>
+
+    <div class="admin">
+
+        <button
+            onclick="location.href='admin.html'"
+        >
+            👑 Administrador
+        </button>
+
+    </div>
+
+</div>
+
 </body>
 </html>
