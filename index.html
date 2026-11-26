@@ -17,61 +17,79 @@
 
 body{
 
-  width:100%;
-  max-width:100%;
-  min-height:100dvh;
+    min-height:100vh;
 
-  margin:0;
-  padding:0;
-
-  background:
-  linear-gradient(
-    135deg,
-    #0f172a,
-    #1e293b,
-    #0f172a
-  );
+    background:
+    linear-gradient(
+        135deg,
+        #0f172a,
+        #1e293b,
+        #0f172a
+    );
 
     color:white;
 
     overflow-x:hidden;
+}
 
- } 
-
-/* círculos decorativos */
+/* Luces decorativas */
 
 body::before{
+
     content:"";
-    position:absolute;
+
+    position:fixed;
+
     width:350px;
     height:350px;
-    border-radius:50%;
+
     background:#3b82f6;
-    top:-100px;
+
+    border-radius:50%;
+
+    top:-150px;
     left:-100px;
+
     filter:blur(120px);
-    opacity:.4;
+
+    opacity:.35;
+
 }
 
 body::after{
+
     content:"";
-    position:absolute;
+
+    position:fixed;
+
     width:350px;
     height:350px;
-    border-radius:50%;
+
     background:#22c55e;
+
+    border-radius:50%;
+
     bottom:-100px;
     right:-100px;
+
     filter:blur(120px);
-    opacity:.4;
+
+    opacity:.35;
+
 }
 
 .container{
-    width:100%;
-    max-width:1100px;
+
+    width:min(1100px,95%);
+
     margin:auto;
-    padding:15px;
-    z-index:10;
+
+    padding:25px;
+
+    position:relative;
+
+    z-index:5;
+
 }
 
 .logo{
